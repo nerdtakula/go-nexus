@@ -1,6 +1,6 @@
 package nexus
 
-var client = New("localhost:8081", "/service/rest/v1").SetBasicAuth("admin", "admin123")
+var client = New("http://localhost:8081/service/rest/v1").SetBasicAuth("admin", "admin123")
 
 // // Comment this out to run tests agaist an existing instance
 // func TestMain(m *testing.M) {
@@ -19,7 +19,7 @@ var client = New("localhost:8081", "/service/rest/v1").SetBasicAuth("admin", "ad
 // 	// Exponential backoff-retry, because the application in the container might not be ready to accept connections yet
 // 	err = pool.Retry(func() error {
 // 		//
-// 		client = New(fmt.Sprintf("localhost:%s", resource.GetPort("8081/tcp")), "/service/rest/v1").SetBasicAuth("admin", "admin123")
+// 		client = New(fmt.Sprintf("localhost:%s/service/rest/v1", resource.GetPort("8081/tcp"))).SetBasicAuth("admin", "admin123")
 // 		return client.Ping()
 // 	})
 // 	if err != nil {

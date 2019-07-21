@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"strings"
+	"net/url"
 	"time"
 
 	"github.com/pkg/errors"
@@ -24,37 +24,36 @@ var (
 
 // Client hander for making REST API calls
 type Client struct {
-	addr     string
-	baseURL  string
+	uri      *url.URL
 	username string
 	password string
 }
 
 // New Client handler
-func New(addr, baseURL string) Client {
-	if baseURL != "" && !strings.HasPrefix(baseURL, "/") {
-		baseURL = "/" + baseURL
+func New(nexusRestURL string) (Client, error) {
+	u, err := url.Parse(nexusRestURL)
+	if err != nil {
+		return Client{}, err
 	}
+
 	return Client{
-		addr:    addr,
-		baseURL: baseURL,
-	}
+		uri: u,
+	}, nil
 }
 
 func (c Client) SetBasicAuth(username, password string) Client {
 	return Client{
-		addr:     c.addr,
-		baseURL:  c.baseURL,
+		uri:      c.uri,
 		username: username,
 		password: password,
 	}
 }
 
 // Address returns the address string
-func (c Client) Address() string { return c.addr }
+func (c Client) Address() string { return c.uri.Host }
 
 func (c Client) url() string {
-	return fmt.Sprintf("http://%s%s", c.addr, c.baseURL)
+	return fmt.Sprintf("%s://%s%s", c.uri.Scheme, c.uri.Host, c.uri.Path)
 }
 
 func (c Client) makeRequest(method, endpoint string, args map[string]interface{}, result interface{}) error {

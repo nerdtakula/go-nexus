@@ -4,8 +4,8 @@ import "testing"
 
 func TestSearchComponents(t *testing.T) {
 	params := SearchParameters{
-		Query:   "VizFlow",
-		Version: "BE:1.3.8-UI:2.0.12",
+		Query:   "TestApplication",
+		Version: "2.7.0",
 	}
 	results, _, err := client.SearchComponents(params)
 	if err != nil {
