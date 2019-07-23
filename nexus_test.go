@@ -1,6 +1,25 @@
 package nexus
 
-var client = New("http://localhost:8081/service/rest/v1").SetBasicAuth("admin", "admin123")
+import (
+	"log"
+	"os"
+	"testing"
+)
+
+var client Client
+
+func TestMain(m *testing.M) {
+	client, err := New("http://localhost:8081/service/rest/v1")
+	if err != nil {
+		log.Fatal(err)
+		os.Exit(1)
+	}
+
+	client.SetBasicAuth("admin", "admin123")
+
+	code := m.Run()
+	os.Exit(code)
+}
 
 // // Comment this out to run tests agaist an existing instance
 // func TestMain(m *testing.M) {
