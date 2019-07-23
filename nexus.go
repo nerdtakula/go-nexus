@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/pkg/errors"
@@ -62,6 +63,11 @@ func (c Client) makeRequest(method, endpoint string, args map[string]interface{}
 	url := c.url() + endpoint
 	req, _ := http.NewRequest(method, url, nil)
 	req.Header.Add("Accept", "application/json")
+
+	// Provide base auth if provided
+	if len(strings.TrimSpace(c.username)) != 0 {
+		req.SetBasicAuth(c.username, c.password)
+	}
 
 	q := req.URL.Query()
 	for key, value := range args {
