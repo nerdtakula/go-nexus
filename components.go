@@ -81,10 +81,27 @@ func (c Client) Component(id string) (*Component, error) {
 	}
 
 	var component *Component
+	statusCode, err := c.makeRequest("GET", fmt.Sprintf("/components/%s", id), nil, &component)
+	switch statusCode {
+	case -1:
+		// Other error message from request
+		return nil, errors.Wrap(err, "Component")
+	case 403:
+		// Insufficient permissions to delete component
+		return nil, ErrInsufficientPermissions
+	case 404:
+		// Component not found
+		return nil, ErrNotFound
+	case 422:
+		// Malformed ID
+		return nil, ErrMalformedID
+	}
 
-	if _, err := c.makeRequest("GET", fmt.Sprintf("/components/%s", id), nil, &component); err != nil {
+	// Safety check
+	if err != nil {
 		return nil, errors.Wrap(err, "Component")
 	}
+	// Successfully got component
 	return component, nil
 }
 
