@@ -41,6 +41,7 @@ func New(nexusRestURL string) (Client, error) {
 	}, nil
 }
 
+// SetBasicAuth to log into nexus
 func (c Client) SetBasicAuth(username, password string) Client {
 	return Client{
 		uri:      c.uri,
@@ -80,13 +81,6 @@ func (c Client) makeRequest(method, endpoint string, args map[string]interface{}
 	if err != nil {
 		return err
 	}
-
-	// fmt.Printf("makeRequest: URL     (%s): %s\n", endpoint, req.URL.String())
-	// fmt.Printf("makeRequest: Status  (%s): %s\n", endpoint, res.Status)
-	// fmt.Printf("makeRequest: Headers (%s): %s\n", endpoint, req.Header.Get("Content-Type"))
-	// fmt.Printf("makeRequest: Body    (%s): %s\n", endpoint, body)
-
-	fmt.Printf("Client:makeRequest -> [%s] --> [%s] \n%s\n\n", endpoint, args, body)
 	return json.Unmarshal(body, result)
 }
 
@@ -104,16 +98,12 @@ func (c Client) makeMultiPartRequest(method, endpoint string, args map[string]in
 	for key, value := range headers {
 		req.Header.Set(key, value)
 	}
-	// req.Header.Set("Content-Type", "multipart/form-data")
 
 	q := req.URL.Query()
 	for key, value := range args {
 		q.Add(key, fmt.Sprintf("%v", value))
 	}
 	req.URL.RawQuery = q.Encode()
-
-	// log.Printf("url: %s", req.URL)
-	// log.Printf("message: %s", body)
 
 	httpClient := http.Client{}
 	res, err := httpClient.Do(req)
@@ -128,7 +118,6 @@ func (c Client) makeMultiPartRequest(method, endpoint string, args map[string]in
 		return errors.Wrap(err, "makeMultiPartRequest")
 	}
 
-	// log.Printf("response: %s", rbody)
 	if result == nil {
 		return nil
 	}

@@ -30,5 +30,5 @@ func (c Client) Repository(repositoryID string) (*Repository, error) {
 			return &repo, nil
 		}
 	}
-	return nil, ErrNotFound
+	return nil, ErrRepositoryNotFound
 }

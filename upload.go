@@ -176,7 +176,7 @@ func (c Client) uploadMaven2Component(rID string, p UploadParameters) (*Componen
 		return nil, err
 	}
 	if len(cpnts) == 0 {
-		return nil, ErrNotFound
+		return nil, ErrEmptyResults
 	}
 	return &cpnts[0], nil
 }
@@ -258,7 +258,7 @@ func (c Client) uploadRawComponent(rID string, p UploadParameters) (*Component, 
 		return nil, err
 	}
 	if len(cpnts) == 0 {
-		return nil, ErrNotFound
+		return nil, ErrEmptyResults
 	}
 	return &cpnts[0], nil
 }
