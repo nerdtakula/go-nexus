@@ -90,5 +90,32 @@ func (c Client) Component(id string) (*Component, error) {
 
 // DeleteComponent from nexus
 func (c Client) DeleteComponent(id string) error {
+	if len(strings.TrimSpace(id)) == 0 {
+		return fmt.Errorf("component id can not be empty")
+	}
+
+	statusCode, err := c.makeRequest("DELETE", fmt.Sprintf("/components/%s", id), nil, nil)
+	switch statusCode {
+	case -1:
+		// Other error message from request
+		return errors.Wrap(err, "Delete Component")
+	case 204:
+		// Component was successfully deleted
+		return nil
+	case 403:
+		// Insufficient permissions to delete component
+		return ErrInsufficientPermissions
+	case 404:
+		// Component not found
+		return ErrNotFound
+	case 422:
+		// Malformed ID
+		return ErrMalformedID
+	}
+
+	// Safety check
+	if err != nil {
+		return errors.Wrap(err, "Delete Component")
+	}
 	return nil
 }

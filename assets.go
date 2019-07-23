@@ -71,9 +71,28 @@ func (c Client) DeleteAsset(id string) error {
 		return fmt.Errorf("asset id can not be empty")
 	}
 
-	if _, err := c.makeRequest("DELETE", fmt.Sprintf("/assets/%s", id), nil, nil); err != nil {
+	statusCode, err := c.makeRequest("DELETE", fmt.Sprintf("/assets/%s", id), nil, nil)
+	switch statusCode {
+	case -1:
+		// Other error message from request
+		return errors.Wrap(err, "Delete Asset")
+	case 204:
+		// Asset was successfully deleted
+		return nil
+	case 403:
+		// Insufficient permissions to delete asset
+		return ErrInsufficientPermissions
+	case 404:
+		// Asset not found
+		return ErrNotFound
+	case 422:
+		// Malformed ID
+		return ErrMalformedID
+	}
+
+	// Safety check
+	if err != nil {
 		return errors.Wrap(err, "Delete Asset")
 	}
 	return nil
-	// TODO: Check response code
 }

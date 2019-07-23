@@ -14,11 +14,13 @@ import (
 )
 
 var (
-	ErrNotFound           = errors.New("not found")                            // when searching for something returns no results
-	ErrEmptyResults       = errors.New("no results found")                     // when searching for something returns no results
-	ErrRepositoryNotFound = errors.New("repository not found")                 // when specified repository wasn't found
-	ErrUnknownRepoFormat  = errors.New("can't handle unknown repo format")     // when we don't know what the format of a repo is
-	ErrMissingFiles       = errors.New("expecting files, but none were found") // when we expect files but don't find any
+	ErrEmptyResults            = errors.New("no results found")                           // when searching for something returns no results
+	ErrInsufficientPermissions = errors.New("insufficient permissions to preform action") // when user doesn't have required permissions to preform acction
+	ErrMalformedID             = errors.New("the supplied id was malformed")              // when the id supplied didn't match expected format
+	ErrMissingFiles            = errors.New("expecting files, but none were found")       // when we expect files but don't find any
+	ErrNotFound                = errors.New("not found")                                  // when searching for something returns no results
+	ErrRepositoryNotFound      = errors.New("repository not found")                       // when specified repository wasn't found
+	ErrUnknownRepoFormat       = errors.New("can't handle unknown repo format")           // when we don't know what the format of a repo is
 )
 
 // Client hander for making REST API calls
