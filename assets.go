@@ -2,6 +2,7 @@ package nexus
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/pkg/errors"
 )
@@ -53,6 +54,17 @@ func (c Client) Assets(repositoryID, continuationToken string) (assets []Asset, 
 // Asset lookup via endpoint
 func (c Client) Asset(id string) (*Asset, error) {
 	return nil, fmt.Errorf("missing")
+
+	if len(strings.TrimSpace(id)) == 0 {
+		return nil, fmt.Errorf("asset id can not be empty")
+	}
+
+	var asset *Asset
+
+	if err := c.makeRequest("GET", fmt.Sprintf("/assets/%s", id), nil, &asset); err != nil {
+		return nil, errors.Wrap(err, "Asset")
+	}
+	return asset, nil
 }
 
 // DeleteAsset via endpoint
