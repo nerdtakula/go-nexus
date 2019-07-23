@@ -14,12 +14,11 @@ import (
 )
 
 var (
-	// ErrNotFound when searching for something returns no results
-	ErrNotFound = errors.New("not found")
-	// ErrUnknownRepoFormat when we don't know what the format of a repo is
-	ErrUnknownRepoFormat = errors.New("can't handle unknown repo format")
-	// ErrMissingFiles when we expect files but don't find any
-	ErrMissingFiles = errors.New("expecting files, but none were found")
+	ErrNotFound           = errors.New("not found")                            // when searching for something returns no results
+	ErrEmptyResults       = errors.New("no results found")                     // when searching for something returns no results
+	ErrRepositoryNotFound = errors.New("repository not found")                 // when specified repository wasn't found
+	ErrUnknownRepoFormat  = errors.New("can't handle unknown repo format")     // when we don't know what the format of a repo is
+	ErrMissingFiles       = errors.New("expecting files, but none were found") // when we expect files but don't find any
 )
 
 // Client hander for making REST API calls
