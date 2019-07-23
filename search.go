@@ -70,7 +70,7 @@ func (c Client) SearchComponents(parameters SearchParameters) ([]Component, stri
 		Items             []Component `json:"items"`
 		ContinuationToken string      `json:"continuationToken"`
 	}{}
-	if err := c.makeRequest("GET", "/search", args, &result); err != nil {
+	if _, err := c.makeRequest("GET", "/search", args, &result); err != nil {
 		return nil, "", err
 	}
 	return result.Items, result.ContinuationToken, nil
@@ -85,7 +85,7 @@ func (c Client) SearchAssets(parameters SearchParameters) ([]Asset, string, erro
 		Items             []Asset `json:"items"`
 		ContinuationToken string  `json:"continuationToken"`
 	}{}
-	if err := c.makeRequest("GET", "/search/assets", args, &result); err != nil {
+	if _, err := c.makeRequest("GET", "/search/assets", args, &result); err != nil {
 		return nil, "", err
 	}
 	return result.Items, result.ContinuationToken, nil

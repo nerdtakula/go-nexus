@@ -44,7 +44,7 @@ func (c Client) Assets(repositoryID, continuationToken string) (assets []Asset, 
 		ContinuationToken string  `json:"continuationToken"`
 	}{}
 
-	err = c.makeRequest("GET", "/assets", args, &result)
+	_, err = c.makeRequest("GET", "/assets", args, &result)
 	if err != nil {
 		return nil, "", errors.Wrap(err, "Assets")
 	}
@@ -53,15 +53,13 @@ func (c Client) Assets(repositoryID, continuationToken string) (assets []Asset, 
 
 // Asset lookup via endpoint
 func (c Client) Asset(id string) (*Asset, error) {
-	return nil, fmt.Errorf("missing")
-
 	if len(strings.TrimSpace(id)) == 0 {
 		return nil, fmt.Errorf("asset id can not be empty")
 	}
 
 	var asset *Asset
 
-	if err := c.makeRequest("GET", fmt.Sprintf("/assets/%s", id), nil, &asset); err != nil {
+	if _, err := c.makeRequest("GET", fmt.Sprintf("/assets/%s", id), nil, &asset); err != nil {
 		return nil, errors.Wrap(err, "Asset")
 	}
 	return asset, nil
@@ -69,5 +67,13 @@ func (c Client) Asset(id string) (*Asset, error) {
 
 // DeleteAsset via endpoint
 func (c Client) DeleteAsset(id string) error {
-	return fmt.Errorf("missing")
+	if len(strings.TrimSpace(id)) == 0 {
+		return fmt.Errorf("asset id can not be empty")
+	}
+
+	if _, err := c.makeRequest("DELETE", fmt.Sprintf("/assets/%s", id), nil, nil); err != nil {
+		return errors.Wrap(err, "Delete Asset")
+	}
+	return nil
+	// TODO: Check response code
 }

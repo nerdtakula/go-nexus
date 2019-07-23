@@ -56,7 +56,7 @@ func (c Client) url() string {
 	return fmt.Sprintf("%s://%s%s", c.uri.Scheme, c.uri.Host, c.uri.Path)
 }
 
-func (c Client) makeRequest(method, endpoint string, args map[string]interface{}, result interface{}) error {
+func (c Client) makeRequest(method, endpoint string, args map[string]interface{}, result interface{}) (statusCode int, err error) {
 	url := c.url() + endpoint
 	req, _ := http.NewRequest(method, url, nil)
 	req.Header.Add("Accept", "application/json")
@@ -72,20 +72,20 @@ func (c Client) makeRequest(method, endpoint string, args map[string]interface{}
 	}
 	res, err := httpClient.Do(req)
 	if err != nil {
-		return err
+		return -1, err
 	}
 	defer res.Body.Close()
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return err
+		return -1, err
 	}
-	return json.Unmarshal(body, result)
+	return res.StatusCode, json.Unmarshal(body, result)
 }
 
-func (c Client) makeMultiPartRequest(method, endpoint string, args map[string]interface{}, headers map[string]string, body *bytes.Buffer, result interface{}) error {
+func (c Client) makeMultiPartRequest(method, endpoint string, args map[string]interface{}, headers map[string]string, body *bytes.Buffer, result interface{}) (statusCode int, err error) {
 	if c.username == "" {
-		return fmt.Errorf("missing user authentication for upload")
+		return -1, fmt.Errorf("missing user authentication for upload")
 	}
 
 	url := c.url() + endpoint
@@ -107,24 +107,25 @@ func (c Client) makeMultiPartRequest(method, endpoint string, args map[string]in
 	httpClient := http.Client{}
 	res, err := httpClient.Do(req)
 	if err != nil {
-		return errors.Wrap(err, "makeMultiPartRequest")
+		return -1, errors.Wrap(err, "makeMultiPartRequest")
 	}
 	defer res.Body.Close()
 	log.Printf("Upload resp: %#v\n", res)
 
 	rbody, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return errors.Wrap(err, "makeMultiPartRequest")
+		return -1, errors.Wrap(err, "makeMultiPartRequest")
 	}
 
 	if result == nil {
-		return nil
+		return res.StatusCode, nil
 	}
-	return json.Unmarshal(rbody, result)
+	return res.StatusCode, json.Unmarshal(rbody, result)
 }
 
 // Ping is used to test we can connect to the service
 func (c Client) Ping() error {
 	var result map[string]interface{}
-	return c.makeRequest("GET", "/read-only", nil, &result)
+	_, err := c.makeRequest("GET", "/read-only", nil, &result)
+	return err
 }

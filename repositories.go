@@ -11,8 +11,8 @@ type Repository struct {
 // Repositories list
 func (c Client) Repositories() ([]Repository, error) {
 	var result []Repository
-	err := c.makeRequest("GET", "/repositories", nil, &result)
-	if err != nil {
+
+	if _, err := c.makeRequest("GET", "/repositories", nil, &result); err != nil {
 		return nil, err
 	}
 	return result, nil

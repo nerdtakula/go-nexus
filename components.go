@@ -38,7 +38,7 @@ func (c Client) Components(repository string) (components []Component, continuat
 		ContinuationToken string      `json:"continuationToken"`
 	}{}
 
-	err = c.makeRequest("GET", "/components", args, &result)
+	_, err = c.makeRequest("GET", "/components", args, &result)
 	if err != nil {
 		return nil, "", errors.Wrap(err, "Components")
 	}
@@ -82,7 +82,7 @@ func (c Client) Component(id string) (*Component, error) {
 
 	var component *Component
 
-	if err := c.makeRequest("GET", fmt.Sprintf("/components/%s", id), nil, &component); err != nil {
+	if _, err := c.makeRequest("GET", fmt.Sprintf("/components/%s", id), nil, &component); err != nil {
 		return nil, errors.Wrap(err, "Component")
 	}
 	return component, nil
