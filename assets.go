@@ -30,6 +30,10 @@ type AssetGroup struct {
 
 // Assets list via endpoint
 func (c Client) Assets(repositoryID, continuationToken string) (assets []Asset, token string, err error) {
+	if len(strings.TrimSpace(repositoryID)) == 0 {
+		return nil, "", fmt.Errorf("repository id can not be empty")
+	}
+
 	args := map[string]interface{}{
 		"repository":        repositoryID,
 		"continuationToken": continuationToken,
@@ -44,7 +48,23 @@ func (c Client) Assets(repositoryID, continuationToken string) (assets []Asset, 
 		ContinuationToken string  `json:"continuationToken"`
 	}{}
 
-	_, err = c.makeRequest("GET", "/assets", args, &result)
+	statusCode, err := c.makeRequest("GET", "/assets", args, &result)
+	switch statusCode {
+	case -1:
+		// Other error message from request
+		return nil, "", errors.Wrap(err, "Assets")
+	case 200:
+		// Success
+		return result.Items, result.ContinuationToken, nil
+	case 403:
+		// Insufficient permissions to delete asset
+		return nil, "", ErrInsufficientPermissions
+	case 422:
+		// Malformed ID
+		return nil, "", ErrMalformedID
+	}
+
+	// Safety checks to catch anything else
 	if err != nil {
 		return nil, "", errors.Wrap(err, "Assets")
 	}
@@ -59,9 +79,27 @@ func (c Client) Asset(id string) (*Asset, error) {
 
 	var asset *Asset
 
-	if _, err := c.makeRequest("GET", fmt.Sprintf("/assets/%s", id), nil, &asset); err != nil {
+	statusCode, err := c.makeRequest("GET", fmt.Sprintf("/assets/%s", id), nil, &asset)
+	switch statusCode {
+	case -1:
+		// Other error message from request
+		return nil, errors.Wrap(err, "Asset")
+	case 403:
+		// Insufficient permissions to delete asset
+		return nil, ErrInsufficientPermissions
+	case 404:
+		// Asset not found
+		return nil, ErrNotFound
+	case 422:
+		// Malformed ID
+		return nil, ErrMalformedID
+	}
+
+	// Safety check
+	if err != nil {
 		return nil, errors.Wrap(err, "Asset")
 	}
+	// Successfully got asset
 	return asset, nil
 }
 
