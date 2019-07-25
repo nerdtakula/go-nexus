@@ -158,7 +158,7 @@ func (c Client) uploadMaven2Component(rID string, p UploadParameters) (*Componen
 		return nil, errors.Wrap(err, "uploadMaven2Component - close")
 	}
 
-	err := c.makeMultiPartRequest("POST", "/components", map[string]interface{}{"repository": rID}, headers, body, nil)
+	_, err := c.makeMultiPartRequest("POST", "/components", map[string]interface{}{"repository": rID}, headers, body, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -241,7 +241,7 @@ func (c Client) uploadRawComponent(rID string, p UploadParameters) (*Component, 
 		return nil, errors.Wrap(err, "uploadRawComponent - close")
 	}
 
-	err := c.makeMultiPartRequest("POST", "/components", map[string]interface{}{"repository": rID}, headers, body, nil)
+	_, err := c.makeMultiPartRequest("POST", "/components", map[string]interface{}{"repository": rID}, headers, body, nil)
 	if err != nil {
 		return nil, err
 	}

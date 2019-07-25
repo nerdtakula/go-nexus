@@ -17,7 +17,7 @@ type BlobStore struct {
 func (c Client) BlobStore(id string) (*BlobStore, error) {
 	result := new(BlobStore)
 
-	if _, err := c.makeRequest("GET", fmt.Sprintf("/blobstores/%s/quota-status"), nil, &result); err != nil {
+	if _, err := c.makeRequest("GET", fmt.Sprintf("/blobstores/%s/quota-status", id), nil, &result); err != nil {
 		return nil, errors.Wrap(err, "BlobStore")
 	}
 	return result, nil

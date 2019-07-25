@@ -6,7 +6,7 @@ import (
 )
 
 func TestComponents(t *testing.T) {
-	components, _, err := client.Components()
+	components, _, err := client.Components("default")
 	if err != nil {
 		t.Fatal(err)
 	}
