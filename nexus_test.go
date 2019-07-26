@@ -33,44 +33,17 @@ const (
 
 // Uncomment this out to run tests agaist an existing instance
 func TestMain(m *testing.M) {
-<<<<<<< HEAD
-	_, err := New(testURL)
-=======
 	// Uses a sensible default on windows (tcp/http) and linux/osx (socket)
 	pool, err := dockertest.NewPool("")
->>>>>>> upstream/develop
 	if err != nil {
 		log.Fatalf("Could not connect to docker: %s", err)
 	}
 
-<<<<<<< HEAD
-	//client.SetBasicAuth(clientUser, clientPass)
-	code := m.Run()
-	os.Exit(code)
-}
-
-func TestClientBase(t *testing.T) {
-	t.Run("TestClientBase", func(t *testing.T) {
-		if client.uri.Host == "" {
-			t.Fatalf("failed to retrieve uri ")
-		}
-	})
-}
-
-// // Comment this out to run tests agaist an existing instance
-// func TestMain(m *testing.M) {
-// 	// Uses a sensible default on windows (tcp/http) and linux/osx (socket)
-// 	pool, err := dockertest.NewPool("")
-// 	if err != nil {
-// 		log.Fatalf("Could not connect to docker: %s", err)
-// 	}
-=======
 	// Pulls an image, creates a container based on it and runs it
 	resource, err := pool.Run("sonatype/nexus3", "latest", nil)
 	if err != nil {
 		log.Fatalf("Could not start resource: %s", err)
 	}
->>>>>>> upstream/develop
 
 	// Exponential backoff-retry, because the application in the container might not be ready to accept connections yet
 	err = pool.Retry(func() error {
