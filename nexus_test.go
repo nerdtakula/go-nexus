@@ -6,19 +6,33 @@ import (
 	"testing"
 )
 
-var client Client
+var client, _ = New(testURL)
+
+const (
+	testURL          = "http://localhost:8081/service/rest/v1"
+	testRepositoryID = "maven-releases"
+	clientUser       = "admin"
+	clientPass       = "admin123"
+)
 
 func TestMain(m *testing.M) {
-	client, err := New("http://localhost:8081/service/rest/v1")
+	_, err := New(testURL)
 	if err != nil {
 		log.Fatal(err)
 		os.Exit(1)
 	}
 
-	client.SetBasicAuth("admin", "admin123")
-
+	//client.SetBasicAuth(clientUser, clientPass)
 	code := m.Run()
 	os.Exit(code)
+}
+
+func TestClientBase(t *testing.T) {
+	t.Run("TestClientBase", func(t *testing.T) {
+		if client.uri.Host == "" {
+			t.Fatalf("failed to retrieve uri ")
+		}
+	})
 }
 
 // // Comment this out to run tests agaist an existing instance
