@@ -158,9 +158,10 @@ func (c Client) uploadMaven2Component(rID string, p UploadParameters) (*Componen
 		return nil, errors.Wrap(err, "uploadMaven2Component - close")
 	}
 
-	_, err := c.makeMultiPartRequest("POST", "/components", map[string]interface{}{"repository": rID}, headers, body, nil)
-	if err != nil {
-		return nil, err
+	statusCode, err := c.makeMultiPartRequest("POST", "/components", map[string]interface{}{"repository": rID}, headers, body, nil)
+	switch statusCode {
+	case -1:
+		return nil, errors.Wrap(err, "error uploading maven2 component")
 	}
 
 	// Query the artifact

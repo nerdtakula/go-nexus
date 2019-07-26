@@ -9,7 +9,14 @@ import (
 	"github.com/ory/dockertest"
 )
 
-var client Client
+var client, _ = New(testURL)
+
+const (
+	testURL          = "http://localhost:8081/service/rest/v1"
+	testRepositoryID = "maven-releases"
+	clientUser       = "admin"
+	clientPass       = "admin123"
+)
 
 // func TestMain(m *testing.M) {
 // 	client, err := New("http://localhost:8081/service/rest/v1")
