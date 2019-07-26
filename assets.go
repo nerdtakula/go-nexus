@@ -46,7 +46,9 @@ func (c Client) Assets(repositoryID, continuationToken string) (assets []Asset, 
 	result := struct {
 		Items             []Asset `json:"items"`
 		ContinuationToken string  `json:"continuationToken"`
-	}{}
+	}{
+		Items: make([]Asset, 0),
+	}
 
 	statusCode, err := c.makeRequest("GET", "/assets", args, &result)
 	switch statusCode {

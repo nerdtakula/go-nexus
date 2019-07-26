@@ -38,6 +38,8 @@ func New(nexusRestURL string) (Client, error) {
 		return Client{}, err
 	}
 
+	// TODO: validate the 'nexusRestURL' input to make sure it's in the correct format
+
 	return Client{
 		uri: u,
 	}, nil
@@ -56,7 +58,8 @@ func (c Client) SetBasicAuth(username, password string) Client {
 func (c Client) Address() string { return c.uri.Host }
 
 func (c Client) url() string {
-	return fmt.Sprintf("%s://%s%s", c.uri.Scheme, c.uri.Host, c.uri.Path)
+	// return fmt.Sprintf("%s://%s%s", c.uri.Scheme, c.uri.Host, c.uri.Path)
+	return c.uri.String()
 }
 
 func (c Client) makeRequest(method, endpoint string, args map[string]interface{}, result interface{}) (statusCode int, err error) {
@@ -92,7 +95,7 @@ func (c Client) makeRequest(method, endpoint string, args map[string]interface{}
 }
 
 func (c Client) makeMultiPartRequest(method, endpoint string, args map[string]interface{}, headers map[string]string, body *bytes.Buffer, result interface{}) (statusCode int, err error) {
-	if c.username == "" {
+	if len(strings.TrimSpace(c.username)) == 0 {
 		return -1, fmt.Errorf("missing user authentication for upload")
 	}
 

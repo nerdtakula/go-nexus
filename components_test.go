@@ -6,7 +6,11 @@ import (
 )
 
 func TestComponents(t *testing.T) {
+<<<<<<< HEAD
 	components, _, err := client.Components(testRepositoryID)
+=======
+	components, _, err := client.Components("default")
+>>>>>>> upstream/develop
 	if err != nil {
 		t.Fatal(err)
 	}
