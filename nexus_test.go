@@ -9,7 +9,7 @@ import (
 	"github.com/ory/dockertest"
 )
 
-var client Client
+var client *Client
 
 // func TestMain(m *testing.M) {
 // 	client, err := New("http://localhost:8081/service/rest/v1")
@@ -29,7 +29,7 @@ func TestMain(m *testing.M) {
 	// Uses a sensible default on windows (tcp/http) and linux/osx (socket)
 	pool, err := dockertest.NewPool("")
 	if err != nil {
-		log.Fatalf("Could not connect to docker: %s", err)
+		log.Fatalf("Could not connect to docker to create pool: %s", err)
 	}
 
 	// Pulls an image, creates a container based on it and runs it

@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -32,26 +31,19 @@ type Client struct {
 }
 
 // New Client handler
-func New(nexusRestURL string) (Client, error) {
+func New(nexusRestURL string) (*Client, error) {
 	u, err := url.Parse(nexusRestURL)
 	if err != nil {
-		return Client{}, err
+		return nil, err
 	}
-
 	// TODO: validate the 'nexusRestURL' input to make sure it's in the correct format
-
-	return Client{
-		uri: u,
-	}, nil
+	return &Client{uri: u}, nil
 }
 
 // SetBasicAuth to log into nexus
-func (c Client) SetBasicAuth(username, password string) Client {
-	return Client{
-		uri:      c.uri,
-		username: username,
-		password: password,
-	}
+func (c *Client) SetBasicAuth(username, password string) {
+	c.username = username
+	c.password = password
 }
 
 // Address returns the address string
@@ -86,10 +78,15 @@ func (c Client) makeRequest(method, endpoint string, args map[string]interface{}
 		return -1, err
 	}
 	defer res.Body.Close()
+	// fmt.Printf("%s: %+v\n", url, res)
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return -1, err
+	}
+	// fmt.Printf("%s Body (%d): %s\n", url, res.StatusCode, body)
+	if result == nil {
+		return res.StatusCode, nil
 	}
 	return res.StatusCode, json.Unmarshal(body, result)
 }
@@ -118,14 +115,14 @@ func (c Client) makeMultiPartRequest(method, endpoint string, args map[string]in
 	httpClient := http.Client{}
 	res, err := httpClient.Do(req)
 	if err != nil {
-		return -1, errors.Wrap(err, "makeMultiPartRequest")
+		return -1, errors.Wrap(err, "makeMultiPartRequest Do")
 	}
 	defer res.Body.Close()
-	log.Printf("Upload resp: %#v\n", res)
+	// log.Printf("Upload resp: %#v\n", res)
 
 	rbody, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return -1, errors.Wrap(err, "makeMultiPartRequest")
+		return -1, errors.Wrap(err, "makeMultiPartRequest ReadAll")
 	}
 
 	if result == nil {
@@ -136,7 +133,14 @@ func (c Client) makeMultiPartRequest(method, endpoint string, args map[string]in
 
 // Ping is used to test we can connect to the service
 func (c Client) Ping() error {
-	var result map[string]interface{}
-	_, err := c.makeRequest("GET", "/read-only", nil, &result)
+	statusCode, err := c.makeRequest("GET", "/status", nil, nil)
+	switch statusCode {
+	case 200:
+		return nil
+	case 401:
+		return errors.Wrap(err, "Unauthorized")
+	case 503:
+		return fmt.Errorf("Unavailable to service requests")
+	}
 	return err
 }
